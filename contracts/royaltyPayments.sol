@@ -88,16 +88,15 @@ contract RoyaltiesPayment is Ownable {
         require(_isPayee(payee));
         // First pay everybody off and clear their balances
         _payAll();
-        // Grab the index of the payee to remove (NOTE: our userIndex
-        // starts at 1)
+        // Grab the index of the payee to remove
         uint256 removalIndex = balances[payee].userIndex - 1;
         // Move the last payee on the list in its place
         payees[removalIndex] = payees[payees.length - 1];
         // And removes the last entry on the array
         payees.pop();
-        // Unless the removed payee was also the last on the list...
+        // Unless the removed payee was also the last on the list
         if (removalIndex != payees.length) {
-            // ... we need to update the last payee's index to its new position
+            // we need to update the last payee's index to its new position
             balances[payees[removalIndex]].userIndex = removalIndex + 1;
         }
         // Set payee's userIndex to false by deleting the entry,
@@ -106,7 +105,6 @@ contract RoyaltiesPayment is Ownable {
     }
 
     /// @notice Add a user to the list of payees
-    /// @param payee - address of the user to add
     function addPayee(address payee) external onlyOwner {
         // The address can't already be a payee
         require(!_isPayee(payee));
@@ -119,8 +117,6 @@ contract RoyaltiesPayment is Ownable {
 
     /// @notice Allow to withdraw payments made in ERC20
     /// @dev Will split evenly between all current payees only. Is not called
-    ///      when payee is added or removed
-    /// @param token - the token to split among all current payees
     function withdrawErc20(IERC20 token) external onlyOwner {
         uint256 tokenBalance = token.balanceOf(address(this));
         require(tokenBalance > 0);
